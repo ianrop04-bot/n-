@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexfgen-Hub | Movie Finder</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Themes */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            transition: all 0.3s ease;
+            min-height: 100vh;
+        }
+
+        body.dark {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+        }
+
+        body.light {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #333;
+        }
+
+        /* Header */
+        .header {
+            background: rgba(0, 0, 0, 0.9);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        body.light .header {
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .logo i {
+            color: #ff6b6b;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .settings-btn, .logout-btn {
+            background: #ff6b6b;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            color: white;
+            cursor: pointer;
+        }
+
+        /* Login Container */
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 80vh;
+            padding: 20px;
+        }
+
+        .login-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 20px;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+        }
+
+        body.light .login-card {
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .login-card h2 {
+            margin-bottom: 20px;
+        }
+
+        .login-card input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            font-size: 16px;
+        }
+
+        body.light .login-card input {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .login-card button {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 10px;
+            background: #ff6b6b;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .code-input-group {
+            display: none;
+        }
+
+        /* Main App */
+        .app-container {
+            display: none;
+            padding: 20px;
+        }
+
+        .search-section {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        body.light .search-section {
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .search-box {
+            display: flex;
+            gap: 10px;
+        }
+
+        .search-box input {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            font-size: 16px;
+        }
+
+        body.light .search-box input {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .search-box button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            background: #ff6b6b;
+            color: white;
+            cursor: pointer;
+        }
+
+        .movies-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .movie-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            overflow: hidden;
+            transition: transform 0.3s;
+            cursor: pointer;
+        }
+
+        body.light .movie-card {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .movie-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .movie-poster {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+        }
+
+        .movie-info {
+            padding: 15px;
+        }
+
+        .movie-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .movie-year {
+            font-size: 12px;
+            color: #aaa;
+        }
+
+        body.light .movie-year {
+            color: #666;
+        }
+
+        .download-btn {
+            background: #ff6b6b;
+            border: none;
+            padding: 8px;
+            border-radius: 8px;
+            color: white;
+            width: 100%;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+
+        /* Settings Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: #1e1e2e;
+            padding: 30px;
+            border-radius: 20px;
+            max-width: 450px;
+            width: 90%;
+        }
+
+        body.light .modal-content {
+            background: white;
+            color: #333;
+        }
+
+        .modal-content h2 {
+            margin-bottom: 20px;
+        }
+
+        .modal-content input, .modal-content select {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.1);
+            color: inherit;
+        }
+
+        .setting-item {
+            margin: 20px 0;
+        }
+
+        .theme-toggle {
+            display: flex;
+            gap: 10px;
+            margin: 10px 0;
+        }
+
+        .theme-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .theme-btn.dark {
+            background: #1a1a2e;
+            color: white;
+        }
+
+        .theme-btn.light {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .theme-btn.active {
+            border: 2px solid #ff6b6b;
+        }
+
+        .save-btn {
+            background: #ff6b6b;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 50px;
+            font-size: 18px;
+        }
+
+        @media (max-width: 768px) {
+            .movies-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+            .movie-poster {
+                height: 225px;
+            }
+        }
+    </style>
+</head>
+<body class="dark">
+    <div class="header">
+        <div class="logo">
+            <i class="fas fa-film"></i>
+            <span>Nexfgen-Hub</span>
+        </div>
+        <div class="user-info" id="userInfo" style="display: none;">
+            <span id="userDisplayName"></span>
+            <button class="settings-btn" onclick="openSettings()"><i class="fas fa-cog"></i></button>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+    </div>
+
+    <!-- Login Section -->
+    <div id="loginSection" class="login-container">
+        <div class="login-card">
+            <i class="fas fa-film" style="font-size: 50px; margin-bottom: 20px;"></i>
+            <h2>Welcome Back!</h2>
+            <p style="margin-bottom: 20px;">Enter your email to receive a verification code</p>
+            <input type="email" id="loginEmail" placeholder="your@email.com">
+            <button onclick="sendVerificationCode()">Send Verification Code</button>
+            <div id="codeInputGroup" class="code-input-group">
+                <input type="text" id="verificationCode" placeholder="Enter 6-digit code">
+                <button onclick="verifyCode()">Verify & Login</button>
+            </div>
+            <p style="margin-top: 20px; font-size: 12px; opacity: 0.7;">We'll send a 6-digit code to your email</p>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div id="appSection" class="app-container">
+        <div class="search-section">
+            <h3>🎬 Search Movies</h3>
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Enter movie title..." onkeypress="if(event.key === 'Enter') searchMovies()">
+                <button onclick="searchMovies()"><i class="fas fa-search"></i> Search</button>
+            </div>
+        </div>
+
+        <div class="search-section">
+            <h3><i class="fas fa-fire"></i> Popular Movies</h3>
+            <div id="popularMovies" class="movies-grid">
+                <div class="loading">Loading popular movies...</div>
+            </div>
+        </div>
+
+        <div id="searchResults" style="display: none;">
+            <h3><i class="fas fa-search"></i> Search Results</h3>
+            <div id="searchResultsGrid" class="movies-grid"></div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="modal">
+        <div class="modal-content">
+            <h2><i class="fas fa-user-cog"></i> User Settings</h2>
+            <div class="setting-item">
+                <label>Display Name</label>
+                <input type="text" id="displayNameInput" placeholder="Enter display name">
+            </div>
+            <div class="setting-item">
+                <label>Email</label>
+                <input type="email" id="userEmailDisplay" readonly disabled>
+            </div>
+            <div class="setting-item">
+                <label>Username</label>
+                <input type="text" id="usernameDisplay" readonly disabled>
+            </div>
+            <div class="setting-item">
+                <label>Theme Preference</label>
+                <div class="theme-toggle">
+                    <button class="theme-btn dark" onclick="setTheme('dark')">🌙 Dark</button>
+                    <button class="theme-btn light" onclick="setTheme('light')">☀️ Light</button>
+                </div>
+            </div>
+            <button class="save-btn" onclick="saveSettings()">Save Changes</button>
+            <button class="save-btn" style="background: #666; margin-top: 10px;" onclick="closeSettings()">Close</button>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = null;
+        let currentTheme = 'dark';
+
+        // Check persistent login on page load
+        function checkLoginStatus() {
+            const savedUser = localStorage.getItem('nexfgen_user');
+            const savedTheme = localStorage.getItem('nexfgen_theme');
+            
+            if (savedTheme) {
+                currentTheme = savedTheme;
+                document.body.className = currentTheme;
+            }
+            
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+                showApp();
+                loadUserSettings();
+            }
+        }
+
+        // Load user settings from server
+        async function loadUserSettings() {
+            if (!currentUser) return;
+            
+            try {
+                const response = await fetch(`/api/user/${encodeURIComponent(currentUser.email)}`);
+                const data = await response.json();
+                if (data.success && data.user) {
+                    currentUser = data.user;
+                    localStorage.setItem('nexfgen_user', JSON.stringify(currentUser));
+                    updateUserUI();
+                    
+                    // Apply saved theme
+                    if (currentUser.settings && currentUser.settings.theme) {
+                        setTheme(currentUser.settings.theme);
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading user settings:', error);
+            }
+        }
+
+        // Update UI with user info
+        function updateUserUI() {
+            document.getElementById('userDisplayName').textContent = currentUser.displayName || currentUser.username;
+        }
+
+        // Send verification code
+        async function sendVerificationCode() {
+            const email = document.getElementById('loginEmail').value;
+            if (!email || !email.includes('@')) {
+                alert('Please enter a valid email address');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/auth/send-code', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert(data.message || 'Verification code sent!');
+                    document.getElementById('codeInputGroup').style.display = 'block';
+                    
+                    if (data.code) {
+                        console.log('Demo code:', data.code);
+                        alert(`Demo Mode - Code: ${data.code}`);
+                    }
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            } catch (error) {
+                alert('Error sending code: ' + error.message);
+            }
+        }
+
+        // Verify code and login
+        async function verifyCode() {
+            const email = document.getElementById('loginEmail').value;
+            const code = document.getElementById('verificationCode').value;
+            
+            if (!code || code.length !== 6) {
+                alert('Please enter the 6-digit verification code');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/auth/verify', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, code })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    currentUser = data.user;
+                    localStorage.setItem('nexfgen_user', JSON.stringify(currentUser));
+                    showApp();
+                    loadUserSettings();
+                } else {
+                    alert('Invalid verification code. Please try again.');
+                }
+            } catch (error) {
+                alert('Error verifying code: ' + error.message);
+            }
+        }
+
+        // Show main app
+        function showApp() {
+            document.getElementById('loginSection').style.display = 'none';
+            document.getElementById('appSection').style.display = 'block';
+            document.getElementById('userInfo').style.display = 'flex';
+            updateUserUI();
+            loadPopularMovies();
+        }
+
+        // Logout
+        function logout() {
+            localStorage.removeItem('nexfgen_user');
+            currentUser = null;
+            document.getElementById('loginSection').style.display = 'flex';
+            document.getElementById('appSection').style.display = 'none';
+            document.getElementById('userInfo').style.display = 'none';
+            document.getElementById('loginEmail').value = '';
+            document.getElementById('verificationCode').value = '';
+            document.getElementById('codeInputGroup').style.display = 'none';
+        }
+
+        // Open settings modal
+        function openSettings() {
+            if (currentUser) {
+                document.getElementById('displayNameInput').value = currentUser.displayName || '';
+                document.getElementById('userEmailDisplay').value = currentUser.email;
+                document.getElementById('usernameDisplay').value = currentUser.username;
+                document.getElementById('settingsModal').style.display = 'flex';
+                
+                // Highlight active theme button
+                const theme = currentUser.settings?.theme || 'dark';
+                document.querySelectorAll('.theme-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                    if (btn.textContent.includes(theme === 'dark' ? 'Dark' : 'Light')) {
+                        btn.classList.add('active');
+                    }
+                });
+            }
+        }
+
+        // Close settings
+        function closeSettings() {
+            document.getElementById('settingsModal').style.display = 'none';
+        }
+
+        // Set theme
+        function setTheme(theme) {
+            currentTheme = theme;
+            document.body.className = theme;
+            localStorage.setItem('nexfgen_theme', theme);
+            
+            // Update active button styling
+            document.querySelectorAll('.theme-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.textContent.includes(theme === 'dark' ? 'Dark' : 'Light')) {
+                    btn.classList.add('active');
+                }
+            });
+        }
+
+        // Save settings
+        async function saveSettings() {
+            const newDisplayName = document.getElementById('displayNameInput').value;
+            const theme = currentTheme;
+            
+            try {
+                const response = await fetch('/api/user/update', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: currentUser.email,
+                        displayName: newDisplayName,
+                        settings: { theme: theme }
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    currentUser = data.user;
+                    localStorage.setItem('nexfgen_user', JSON.stringify(currentUser));
+                    updateUserUI();
+                    alert('Settings saved successfully!');
+                    closeSettings();
+                } else {
+                    alert('Error saving settings');
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+
+        // Load popular movies
+        async function loadPopularMovies() {
+            try {
+                const response = await fetch('/api/movies/popular');
+                const data = await response.json();
+                
+                if (data.results) {
+                    displayMovies(data.results.slice(0, 12), 'popularMovies');
+                }
+            } catch (error) {
+                document.getElementById('popularMovies').innerHTML = '<div class="loading">Error loading movies. Check TMDB API key.</div>';
+            }
+        }
+
+        // Search movies
+        async function searchMovies() {
+            const query = document.getElementById('searchInput').value;
+            if (!query) return;
+
+            document.getElementById('searchResults').style.display = 'block';
+            document.getElementById('searchResultsGrid').innerHTML = '<div class="loading">Searching...</div>';
+
+            try {
+                const response = await fetch(`/api/movies/search?query=${encodeURIComponent(query)}`);
+                const data = await response.json();
+                
+                if (data.results && data.results.length > 0) {
+                    displayMovies(data.results.slice(0, 12), 'searchResultsGrid');
+                } else {
+                    document.getElementById('searchResultsGrid').innerHTML = '<div class="loading">No movies found</div>';
+                }
+            } catch (error) {
+                document.getElementById('searchResultsGrid').innerHTML = '<div class="loading">Search failed</div>';
+            }
+        }
+
+        // Display movies
+        function displayMovies(movies, containerId) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = movies.map(movie => `
+                <div class="movie-card">
+                    <img class="movie-poster" src="https://image.tmdb.org/t/p/w300${movie.poster_path || ''}" alt="${movie.title}">
+                    <div class="movie-info">
+                        <div class="movie-title">${movie.title}</div>
+                        <div class="movie-year">${movie.release_date ? movie.release_date.split('-')[0] : 'N/A'} ⭐ ${movie.vote_average?.toFixed(1) || 'N/A'}</div>
+                        <button class="download-btn" onclick="simulateDownload('${movie.title.replace(/'/g, "\\'")}')">🎬 Download</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Simulate download
+        function simulateDownload(title) {
+            alert(`🎬 Download simulation started for "${title}"\n\nThis is a demo. In production, you would get actual movie files.`);
+        }
+
+        // Initialize
+        checkLoginStatus();
+    </script>
+</body>
+</html>
