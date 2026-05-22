@@ -17,9 +17,9 @@ app.use(express.json());
 app.use(express.static('public'));
 
 // ========== EMAIL CONFIGURATION ==========
-// REPLACE WITH YOUR EMAIL CREDENTIALS:
-const EMAIL_USER = 'your_email@gmail.com';     // Replace with your email
-const EMAIL_PASS = 'your_app_password';        // Replace with your app password
+// REPLACE WITH YOUR EMAIL CREDENTIALS: groupanimators4@gmail.com
+const EMAIL_USER = 'groupanimators4@gmail.com';     // Replace with your email
+const EMAIL_PASS = 'pmzg eboq hrrv czbp';        // Replace with your app password
 
 let transporter = null;
 
@@ -159,7 +159,7 @@ app.post('/api/auth/verify', (req, res) => {
 
 // ========== TMDB MOVIE ENDPOINTS ==========
 
-const TMDB_API_KEY = 'your_tmdb_api_key_here'; // REPLACE WITH YOUR TMDB API KEY
+const TMDB_API_KEY = '89802458aff508c9c6eff8b7290d8970'; // REPLACE WITH YOUR TMDB API KEY
 
 app.get('/api/movies/popular', async (req, res) => {
     try {
